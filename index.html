@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>祝萱萱宝宝生日快乐</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700;900&family=ZCOOL+KuaiLe&display=swap');
+
+        :root {
+            --pink: #ec407a;
+            --deep-pink: #c2185b;
+            --light-pink: #fce4ec;
+            --gold: #ffd54f;
+            --warm: #ff8a65;
+            --purple: #ab47bc;
+            --sky: #4fc3f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--pink), var(--gold), var(--purple), var(--pink));
+            background-size: 200% 100%;
+            animation: progressShimmer 2s linear infinite;
+            z-index: 10000;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        @keyframes progressShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ===== CANVAS BACKGROUND ===== */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        /* ===== SECTION BASE ===== */
+        section {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-gradient {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 30%, rgba(236,64,122,0.25) 0%, transparent 60%),
+                        radial-gradient(ellipse at 20% 80%, rgba(171,71,188,0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, rgba(255,138,101,0.15) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-cake {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: heroFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 20px 40px rgba(236,64,122,0.4));
+            position: relative;
+        }
+
+        .hero-cake::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,213,79,0.2);
+            transform: translate(-50%, -50%);
+            animation: ringPulse 3s ease-in-out infinite;
+        }
+
+        .hero-cake::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 1px solid rgba(236,64,122,0.12);
+            transform: translate(-50%, -50%);
+            animation: ringPulse 3s ease-in-out 0.5s infinite;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-25px) rotate(3deg); }
+        }
+
+        .hero-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(3rem, 10vw, 7rem);
+            background: linear-gradient(135deg, #fff 0%, #fce4ec 30%, #f48fb1 60%, #ffd54f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+            animation: titleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            text-shadow: none;
+        }
+
+        .hero-sub {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 6px;
+            margin-bottom: 2rem;
+            animation: titleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        @keyframes titleReveal {
+            from { opacity: 0; transform: translateY(60px) scale(0.9); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            animation: scrollBounce 2s ease-in-out infinite;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .scroll-hint svg {
+            width: 24px;
+            height: 24px;
+            stroke: rgba(255,255,255,0.5);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(10px); opacity: 1; }
+        }
+
+        /* ===== COUNTDOWN / AGE SECTION ===== */
+        .age-section {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(171,71,188,0.08) 50%, transparent 100%);
+            position: relative;
+        }
+
+        .age-section::before {
+            content: '✨';
+            position: absolute;
+            top: 15%; left: 10%;
+            font-size: 2rem;
+            animation: floatDeco 6s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        .age-section::after {
+            content: '💫';
+            position: absolute;
+            bottom: 15%; right: 10%;
+            font-size: 1.8rem;
+            animation: floatDeco 6s ease-in-out 2s infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes floatDeco {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+
+        .age-display {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .age-number {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(6rem, 20vw, 14rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), var(--warm), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            animation: numberPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            filter: drop-shadow(0 0 30px rgba(255,213,79,0.3));
+        }
+
+        @keyframes numberPop {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .age-label {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            color: var(--gold);
+        }
+
+        .age-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, rgba(255,213,79,0.15), rgba(236,64,122,0.15));
+            border: 1px solid rgba(255,213,79,0.25);
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: 1rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,79,0.2); }
+            50% { box-shadow: 0 0 20px 4px rgba(255,213,79,0.15); }
+        }
+
+        .age-desc {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 500px;
+            text-align: center;
+            line-height: 2;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== WISH CARDS ===== */
+        .wishes-section {
+            padding: 6rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .wishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .wish-card-wrapper {
+            height: 320px;
+            cursor: pointer;
+        }
+
+        .wish-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .wish-card-wrapper:hover .wish-card-inner,
+        .wish-card-wrapper.flipped .wish-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .wish-card-front, .wish-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .wish-card-front {
+            background: linear-gradient(135deg, rgba(236,64,122,0.2), rgba(171,71,188,0.2));
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+        }
+
+        .wish-card-wrapper:hover .wish-card-front {
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 8px 40px rgba(236,64,122,0.15);
+        }
+
+        .wish-card-front .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: iconFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .wish-card-front .card-title {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .wish-card-front .card-hint {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .wish-card-back {
+            background: linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,138,101,0.15));
+            border: 1px solid rgba(255,213,79,0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transform: rotateY(180deg);
+        }
+
+        .wish-card-back .card-wish {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(10,10,26,0.5) 20%, rgba(10,10,26,0.5) 80%, transparent 100%);
+        }
+
+        .timeline {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, var(--pink), var(--gold), var(--purple), transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+            padding-right: calc(50% + 2rem);
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+            padding-left: calc(50% + 2rem);
+            text-align: left;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--pink);
+            border: 3px solid #0a0a1a;
+            box-shadow: 0 0 15px rgba(236,64,122,0.5);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item.visible .timeline-dot {
+            animation: dotGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes dotGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(236,64,122,0.5); }
+            50% { box-shadow: 0 0 25px rgba(236,64,122,0.8), 0 0 50px rgba(236,64,122,0.3); }
+        }
+
+        .timeline-content {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .timeline-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .timeline-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== FIREWORK BUTTON ===== */
+        .firework-section {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .big-btn {
+            position: relative;
+            padding: 1.2rem 3rem;
+            font-size: 1.3rem;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            color: #fff;
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 30px rgba(236,64,122,0.4);
+            overflow: hidden;
+        }
+
+        .big-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .big-btn:hover::before { left: 100%; }
+
+        .big-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(236,64,122,0.5);
+        }
+
+        .big-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .secret-msg {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: var(--gold);
+            opacity: 0;
+            transition: all 0.8s ease;
+            max-width: 500px;
+            text-align: center;
+            line-height: 2;
+        }
+
+        .secret-msg.show {
+            opacity: 1;
+            animation: secretReveal 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes secretReveal {
+            from { transform: translateY(20px) scale(0.95); filter: blur(5px); }
+            to { transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        /* ===== MUSIC TOGGLE ===== */
+        .music-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-toggle:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .music-toggle.playing {
+            animation: musicPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(236,64,122,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(236,64,122,0); }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--pink);
+            text-decoration: none;
+        }
+
+        /* ===== FIREWORK CANVAS ===== */
+        #fireworkCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* ===== SCROLL REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .timeline::before { left: 20px; }
+
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                flex-direction: row;
+                padding: 0 0 0 50px;
+                text-align: left;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .wishes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wish-card-wrapper {
+                height: 280px;
+            }
+
+            .hero-cake { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <canvas id="bgCanvas"></canvas>
+    <canvas id="fireworkCanvas"></canvas>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg-gradient"></div>
+        <div class="hero-cake">🎂</div>
+        <h1 class="hero-title">生日快乐</h1>
+        <p class="hero-sub">致 最可爱的萱萱宝宝</p>
+        <div class="scroll-hint">
+            <span>往下滑</span>
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+    </section>
+
+    <!-- AGE -->
+    <section class="age-section">
+        <div class="age-display reveal">
+            <span class="age-number" id="ageNumber">?</span>
+            <span class="age-label">岁</span>
+        </div>
+        <div class="age-badge reveal">🎂 第二十一个生日</div>
+        <p class="age-desc reveal">又长大一岁啦，每一天都是崭新的、闪闪发光的。</p>
+    </section>
+
+    <!-- WISH CARDS -->
+    <section class="wishes-section">
+        <h2 class="section-title reveal">写给你的心愿</h2>
+        <div class="wishes-grid">
+            <div class="wish-card-wrapper reveal" onclick="this.classList.toggle('flipped')">
+                <div class="wish-card-inner">
+                    <div class="wish-card-front">
+                        <div class="card-icon">🌟</div>
+                        <div class="card-title">关于快乐</div>
+                        <div class="card-hint">点击翻转查看</div>
+                    </div>
+                    <div class="wish-card-back">
+                        <div class="card-wish">愿你的每一天都被小确幸填满，<br>吃到好吃的会笑，<br>看到好看的会开心，<br>遇到好玩的会尖叫。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wish-card-wrapper reveal" onclick="this.classList.toggle('flipped')">
+                <div class="wish-card-inner">
+                    <div class="wish-card-front">
+                        <div class="card-icon">💪</div>
+                        <div class="card-title">关于勇气</div>
+                        <div class="card-hint">点击翻转查看</div>
+                    </div>
+                    <div class="wish-card-back">
+                        <div class="card-wish">愿你永远有做自己的勇气，<br>不被定义，不被束缚，<br>想笑就笑，想闹就闹，<br>活成最自在的样子。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wish-card-wrapper reveal" onclick="this.classList.toggle('flipped')">
+                <div class="wish-card-inner">
+                    <div class="wish-card-front">
+                        <div class="card-icon">🌸</div>
+                        <div class="card-title">关于未来</div>
+                        <div class="card-hint">点击翻转查看</div>
+                    </div>
+                    <div class="wish-card-back">
+                        <div class="card-wish">愿你走过的每一步，<br>都铺满了鲜花和星光，<br>愿你回头时满目星河，<br>抬头时皆是坦途。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wish-card-wrapper reveal" onclick="this.classList.toggle('flipped')">
+                <div class="wish-card-inner">
+                    <div class="wish-card-front">
+                        <div class="card-icon">💕</div>
+                        <div class="card-title">关于被爱</div>
+                        <div class="card-hint">点击翻转查看</div>
+                    </div>
+                    <div class="wish-card-back">
+                        <div class="card-wish">你值得世间一切美好，<br>值得被偏爱，被珍惜，<br>值得在每个平凡的日子里，<br>都感受到满满的爱意。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="timeline-section">
+        <h2 class="section-title reveal">那些闪闪发光的日子</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-emoji">👶</div>
+                    <div class="timeline-date">来到这个世界</div>
+                    <div class="timeline-text">呱呱坠地的那一刻，世界多了一个小天使</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-emoji">🎒</div>
+                    <div class="timeline-date">学生时代</div>
+                    <div class="timeline-text">背着书包穿梭在校园里，每一天都是青春的模样</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-emoji">🌟</div>
+                    <div class="timeline-date">成长蜕变</div>
+                    <div class="timeline-text">一步步变成更好的自己，闪闪发光</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-emoji">🎂</div>
+                    <div class="timeline-date">今天</div>
+                    <div class="timeline-text">又迎来了属于你的这一天，未来继续可期</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FIREWORK -->
+    <section class="firework-section">
+        <p class="section-title reveal">送你一场烟花</p>
+        <button class="big-btn reveal" id="fwBtn">🎆 点击放烟花</button>
+        <div class="secret-msg" id="secretMsg">
+            萱萱宝宝，新的一岁要更更更开心呀！<br>
+            愿所有的美好都如约而至 🌷
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Made with love for 萱萱 &hearts;</p>
+    </div>
+
+    <!-- MUSIC TOGGLE -->
+    <button class="music-toggle" id="musicBtn" title="背景音乐">🔇</button>
+
+<script>
+/* ===== PARTICLE BACKGROUND ===== */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let bgW, bgH;
+const particles = [];
+const PARTICLE_COUNT = 120;
+
+function resizeBg() {
+    bgW = bgCanvas.width = window.innerWidth;
+    bgH = bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+class Particle {
+    constructor() { this.reset(); }
+    reset() {
+        this.x = Math.random() * bgW;
+        this.y = Math.random() * bgH;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        this.hue = Math.random() * 60 + 330; // pink-ish range
+        this.pulse = Math.random() * Math.PI * 2;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.pulse += 0.02;
+        if (this.x < 0 || this.x > bgW || this.y < 0 || this.y > bgH) this.reset();
+    }
+    draw() {
+        const o = this.opacity * (0.6 + 0.4 * Math.sin(this.pulse));
+        bgCtx.beginPath();
+        bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        bgCtx.fillStyle = `hsla(${this.hue}, 80%, 70%, ${o})`;
+        bgCtx.fill();
+    }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(particles[i].x, particles[i].y);
+                bgCtx.lineTo(particles[j].x, particles[j].y);
+                bgCtx.strokeStyle = `rgba(236,64,122,${0.08 * (1 - dist / 120)})`;
+                bgCtx.lineWidth = 0.5;
+                bgCtx.stroke();
+            }
+        }
+    }
+}
+
+function animBg() {
+    bgCtx.clearRect(0, 0, bgW, bgH);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawConnections();
+    requestAnimationFrame(animBg);
+}
+animBg();
+
+/* ===== FIREWORK SYSTEM ===== */
+const fwCanvas = document.getElementById('fireworkCanvas');
+const fwCtx = fwCanvas.getContext('2d');
+let fwW, fwH;
+
+function resizeFw() {
+    fwW = fwCanvas.width = window.innerWidth;
+    fwH = fwCanvas.height = window.innerHeight;
+}
+resizeFw();
+window.addEventListener('resize', resizeFw);
+
+class Spark {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.decay = Math.random() * 0.02 + 0.01;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.gravity = 0.05;
+        this.trail = [];
+    }
+    update() {
+        this.trail.push({ x: this.x, y: this.y, alpha: this.alpha });
+        if (this.trail.length > 8) this.trail.shift();
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.98;
+        this.alpha -= this.decay;
+    }
+    draw() {
+        this.trail.forEach((t, i) => {
+            fwCtx.beginPath();
+            fwCtx.arc(t.x, t.y, this.size * 0.5, 0, Math.PI * 2);
+            fwCtx.fillStyle = this.color.replace('1)', `${t.alpha * 0.3 * (i / this.trail.length)})`);
+            fwCtx.fill();
+        });
+        fwCtx.beginPath();
+        fwCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        fwCtx.fillStyle = this.color.replace('1)', `${this.alpha})`);
+        fwCtx.fill();
+    }
+}
+
+let sparks = [];
+const FW_COLORS = [
+    'rgba(255,107,107,1)', 'rgba(255,202,87,1)', 'rgba(72,219,251,1)',
+    'rgba(255,159,243,1)', 'rgba(84,160,255,1)', 'rgba(243,104,224,1)',
+    'rgba(171,71,188,1)', 'rgba(255,183,77,1)', 'rgba(255,213,79,1)',
+    'rgba(236,64,122,1)'
+];
+
+function launchFirework(x, y) {
+    const count = 60 + Math.floor(Math.random() * 40);
+    const color = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+    for (let i = 0; i < count; i++) {
+        sparks.push(new Spark(x, y, color));
+    }
+}
+
+function launchRandom() {
+    const x = fwW * 0.15 + Math.random() * fwW * 0.7;
+    const y = fwH * 0.1 + Math.random() * fwH * 0.4;
+    launchFirework(x, y);
+}
+
+let fwActive = false;
+function animFw() {
+    fwCtx.clearRect(0, 0, fwW, fwH);
+    sparks = sparks.filter(s => s.alpha > 0);
+    sparks.forEach(s => { s.update(); s.draw(); });
+    if (fwActive || sparks.length > 0) requestAnimationFrame(animFw);
+}
+
+document.getElementById('fwBtn').addEventListener('click', () => {
+    fwActive = true;
+    animFw();
+    let count = 0;
+    const interval = setInterval(() => {
+        launchRandom();
+        count++;
+        if (count >= 12) { clearInterval(interval); fwActive = false; }
+    }, 300);
+    document.getElementById('secretMsg').classList.add('show');
+});
+
+/* ===== SCROLL REVEAL ===== */
+const revealEls = document.querySelectorAll('.reveal, .timeline-item');
+const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.15 });
+revealEls.forEach(el => revealObs.observe(el));
+
+/* ===== AGE NUMBER (lazy reveal) ===== */
+const ageObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            const el = document.getElementById('ageNumber');
+            let n = 0;
+            const target = 21;
+            const timer = setInterval(() => {
+                el.textContent = n;
+                n++;
+                if (n > target) { clearInterval(timer); el.textContent = target; }
+            }, 60);
+            ageObs.disconnect();
+        }
+    });
+}, { threshold: 0.5 });
+ageObs.observe(document.getElementById('ageNumber'));
+
+/* ===== CLICK SPARKLE ===== */
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.big-btn') || e.target.closest('.music-toggle')) return;
+    for (let i = 0; i < 8; i++) {
+        const spark = document.createElement('div');
+        spark.style.cssText = `
+            position: fixed; left: ${e.clientX}px; top: ${e.clientY}px;
+            width: 4px; height: 4px; border-radius: 50%; pointer-events: none; z-index: 9999;
+            background: hsl(${Math.random()*60+320}, 80%, 70%);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        `;
+        document.body.appendChild(spark);
+        requestAnimationFrame(() => {
+            spark.style.transform = `translate(${(Math.random()-0.5)*80}px, ${(Math.random()-0.5)*80}px) scale(0)`;
+            spark.style.opacity = '0';
+        });
+        setTimeout(() => spark.remove(), 600);
+    }
+});
+
+/* ===== MUSIC (Web Audio API - generative lullaby) ===== */
+let audioCtx = null;
+let musicPlaying = false;
+const musicBtn = document.getElementById('musicBtn');
+
+const melody = [
+    523.25, 587.33, 659.25, 698.46, 783.99, 698.46, 659.25, 587.33,
+    523.25, 659.25, 783.99, 659.25, 523.25, 587.33, 523.25,
+    698.46, 659.25, 587.33, 523.25, 587.33, 659.25, 783.99,
+    659.25, 587.33, 523.25, 659.25, 523.25
+];
+
+function playNote(freq, time, duration) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.12, time + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(time);
+    osc.stop(time + duration);
+}
+
+function playMelody() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    melody.forEach((freq, i) => {
+        playNote(freq, now + i * 0.4, 0.35);
+    });
+    // loop
+    setTimeout(playMelody, melody.length * 400 + 500);
+}
+
+musicBtn.addEventListener('click', () => {
+    if (!musicPlaying) {
+        musicPlaying = true;
+        musicBtn.textContent = '🔊';
+        musicBtn.classList.add('playing');
+        playMelody();
+    } else {
+        musicPlaying = false;
+        musicBtn.textContent = '🔇';
+        musicBtn.classList.remove('playing');
+        if (audioCtx) { audioCtx.close(); audioCtx = null; }
+    }
+});
+
+/* ===== SCROLL PROGRESS BAR ===== */
+window.addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    document.getElementById('scrollProgress').style.width = pct + '%';
+});
+</script>
+</body>
+</html>
