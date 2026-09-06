@@ -307,6 +307,8 @@
         .wish-card-wrapper {
             height: 320px;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .wish-card-inner {
@@ -646,6 +648,15 @@
 
             .wish-card-wrapper {
                 height: 280px;
+            }
+
+            /* 手机端去掉 hover 翻转，只用点击 */
+            .wish-card-wrapper:hover .wish-card-inner {
+                transform: none;
+            }
+
+            .wish-card-wrapper.flipped .wish-card-inner {
+                transform: rotateY(180deg);
             }
 
             .hero-cake { font-size: 4rem; }
