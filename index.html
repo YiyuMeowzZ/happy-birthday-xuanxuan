@@ -20,7 +20,11 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+        }
 
         body {
             font-family: 'Noto Sans SC', sans-serif;
@@ -59,6 +63,7 @@
         section {
             position: relative;
             z-index: 10;
+            scroll-snap-align: start;
         }
 
         /* ===== HERO SECTION ===== */
@@ -178,7 +183,7 @@
 
         /* ===== COUNTDOWN / AGE SECTION ===== */
         .age-section {
-            min-height: 60vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -272,7 +277,11 @@
 
         /* ===== WISH CARDS ===== */
         .wishes-section {
+            min-height: 100vh;
             padding: 6rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .section-title {
@@ -380,7 +389,11 @@
 
         /* ===== TIMELINE ===== */
         .timeline-section {
+            min-height: 100vh;
             padding: 6rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             background: linear-gradient(180deg, transparent 0%, rgba(10,10,26,0.5) 20%, rgba(10,10,26,0.5) 80%, transparent 100%);
         }
 
@@ -478,7 +491,7 @@
 
         /* ===== FIREWORK BUTTON ===== */
         .firework-section {
-            min-height: 50vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -583,6 +596,7 @@
             padding: 3rem 2rem;
             color: rgba(255,255,255,0.3);
             font-size: 0.85rem;
+            scroll-snap-align: none;
         }
 
         .footer a {
@@ -930,12 +944,66 @@ function animFw() {
     if (fwActive || sparks.length > 0) requestAnimationFrame(animFw);
 }
 
+/* ===== FIREWORK SOUND ===== */
+function playFireworkSound() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+
+    // 爆炸声 - 白噪声 burst
+    const bufferSize = audioCtx.sampleRate * 0.3;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    // 带通滤波 - 让爆炸声更像真实烟花
+    const bandpass = audioCtx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 800 + Math.random() * 600;
+    bandpass.Q.value = 0.5;
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(now);
+    noise.stop(now + 0.3);
+
+    // 嘶嘶声 - 高频余韵
+    const hissLen = 0.15;
+    const hissBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * hissLen, audioCtx.sampleRate);
+    const hissData = hissBuf.getChannelData(0);
+    for (let i = 0; i < hissData.length; i++) {
+        hissData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / hissData.length, 5);
+    }
+    const hiss = audioCtx.createBufferSource();
+    hiss.buffer = hissBuf;
+    const hissGain = audioCtx.createGain();
+    hissGain.gain.setValueAtTime(0.04, now + 0.05);
+    hissGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05 + hissLen);
+    const hpf = audioCtx.createBiquadFilter();
+    hpf.type = 'highpass';
+    hpf.frequency.value = 3000;
+    hiss.connect(hpf);
+    hpf.connect(hissGain);
+    hissGain.connect(audioCtx.destination);
+    hiss.start(now + 0.05);
+    hiss.stop(now + 0.05 + hissLen);
+}
+
 document.getElementById('fwBtn').addEventListener('click', () => {
     fwActive = true;
     animFw();
     let count = 0;
     const interval = setInterval(() => {
         launchRandom();
+        playFireworkSound();
         count++;
         if (count >= 12) { clearInterval(interval); fwActive = false; }
     }, 300);
