@@ -991,53 +991,95 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/* ===== MUSIC (Web Audio API - generative lullaby) ===== */
+/* ===== MUSIC (Web Audio API - Happy Birthday) ===== */
 let audioCtx = null;
 let musicPlaying = false;
+let musicTimer = null;
 const musicBtn = document.getElementById('musicBtn');
 
-const melody = [
-    523.25, 587.33, 659.25, 698.46, 783.99, 698.46, 659.25, 587.33,
-    523.25, 659.25, 783.99, 659.25, 523.25, 587.33, 523.25,
-    698.46, 659.25, 587.33, 523.25, 587.33, 659.25, 783.99,
-    659.25, 587.33, 523.25, 659.25, 523.25
+// Happy Birthday to You - 真实旋律 + 和弦伴奏
+const NOTE = { C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88, C5:523.25, D5:587.33, E5:659.25 };
+const melodyNotes = [
+    // Happy birthday to you
+    { n: NOTE.C4, d: 0.3 }, { n: NOTE.C4, d: 0.15 },
+    { n: NOTE.D4, d: 0.45 }, { n: NOTE.C4, d: 0.45 },
+    { n: NOTE.F4, d: 0.45 }, { n: NOTE.E4, d: 0.7 },
+    // Happy birthday to you
+    { n: NOTE.C4, d: 0.3 }, { n: NOTE.C4, d: 0.15 },
+    { n: NOTE.D4, d: 0.45 }, { n: NOTE.C4, d: 0.45 },
+    { n: NOTE.G4, d: 0.45 }, { n: NOTE.F4, d: 0.7 },
+    // Happy birthday dear xuanxuan
+    { n: NOTE.C4, d: 0.3 }, { n: NOTE.C4, d: 0.15 },
+    { n: NOTE.C5, d: 0.45 }, { n: NOTE.A4, d: 0.45 },
+    { n: NOTE.F4, d: 0.3 }, { n: NOTE.E4, d: 0.15 },
+    { n: NOTE.D4, d: 0.45 }, { n: NOTE.B4, d: 0.45 },
+    // Happy birthday to you
+    { n: NOTE.A4, d: 0.3 }, { n: NOTE.A4, d: 0.15 },
+    { n: NOTE.G4, d: 0.45 }, { n: NOTE.F4, d: 0.45 },
+    { n: NOTE.G4, d: 0.45 }, { n: NOTE.F4, d: 0.7 },
 ];
 
-function playNote(freq, time, duration) {
+// 简单和弦（左手伴奏）
+const chords = [
+    [261.63, 329.63], [261.63, 329.63], [293.66, 349.23], [261.63, 329.63],
+    [349.23, 440.00], [329.63, 392.00],
+    [261.63, 329.63], [261.63, 329.63], [293.66, 349.23], [261.63, 329.63],
+    [392.00, 493.88], [349.23, 440.00],
+    [261.63, 329.63], [261.63, 329.63], [523.25, 659.25], [440.00, 523.25],
+    [349.23, 440.00], [329.63, 392.00], [293.66, 349.23], [493.88, 587.33],
+    [440.00, 523.25], [440.00, 523.25], [392.00, 493.88], [349.23, 440.00],
+    [392.00, 493.88], [349.23, 440.00],
+];
+
+function playNote(freq, time, duration, type = 'sine', vol = 0.1) {
     if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sine';
+    osc.type = type;
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(0.12, time + 0.05);
+    gain.gain.linearRampToValueAtTime(vol, time + 0.04);
     gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(time);
-    osc.stop(time + duration);
+    osc.stop(time + duration + 0.05);
 }
 
 function playMelody() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const now = audioCtx.currentTime;
-    melody.forEach((freq, i) => {
-        playNote(freq, now + i * 0.4, 0.35);
+    let t = now;
+
+    melodyNotes.forEach((note, i) => {
+        // 主旋律 - 三角波更柔和
+        playNote(note.n, t, note.d * 0.9, 'triangle', 0.12);
+        // 高八度泛音 - 很轻的正弦波，增加梦幻感
+        playNote(note.n * 2, t, note.d * 0.6, 'sine', 0.03);
+        // 和弦伴奏
+        if (chords[i]) {
+            playNote(chords[i][0], t, note.d * 0.8, 'sine', 0.04);
+            playNote(chords[i][1], t, note.d * 0.8, 'sine', 0.04);
+        }
+        t += note.d;
     });
-    // loop
-    setTimeout(playMelody, melody.length * 400 + 500);
+
+    // 循环
+    const totalDuration = melodyNotes.reduce((sum, n) => sum + n.d, 0);
+    musicTimer = setTimeout(playMelody, totalDuration * 1000 + 800);
 }
 
 musicBtn.addEventListener('click', () => {
     if (!musicPlaying) {
         musicPlaying = true;
-        musicBtn.textContent = '🔊';
+        musicBtn.textContent = '🎵';
         musicBtn.classList.add('playing');
         playMelody();
     } else {
         musicPlaying = false;
         musicBtn.textContent = '🔇';
         musicBtn.classList.remove('playing');
+        if (musicTimer) { clearTimeout(musicTimer); musicTimer = null; }
         if (audioCtx) { audioCtx.close(); audioCtx = null; }
     }
 });
