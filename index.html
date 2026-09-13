@@ -8,9 +8,9 @@
     <link rel="icon" href="assets/heart.webp">
     <link rel="preload" as="image" href="assets/hero-farm.webp">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&family=ZCOOL+KuaiLe&display=swap');
+        /* 字体全部自托管，无第三方请求（Google Fonts 的 @import 会阻塞渲染，且国内经常很慢） */
 
-        /* 中文像素字体：Zpix 子集，只含本页用字（12KB）。文案改动后重跑 tools/subset-font.py */
+        /* 中文像素字体：Zpix 子集，只含本页用字。文案改动后重跑 tools/subset-font.py */
         @font-face {
             font-family: 'Zpix';
             src: url('assets/fonts/zpix-subset.woff2') format('woff2');
@@ -18,9 +18,17 @@
             font-style: normal;
             font-display: swap;
         }
+        /* 拉丁像素字体：Press Start 2P 子集，用于 .px-tag 那类英文标签 */
+        @font-face {
+            font-family: 'Press Start 2P';
+            src: url('assets/fonts/press-start-2p-subset.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
 
         :root {
-            --font-px: 'Zpix', 'ZCOOL KuaiLe', cursive;
+            --font-px: 'Zpix', system-ui, sans-serif;
             --paper: #f5e7c1;
             --paper-deep: #ecd9a6;
             --ink: #473320;
@@ -375,7 +383,11 @@
         }
         .letter-bg {
             position: absolute; inset: 0;
-            background: url('assets/field-mail.webp') center bottom / cover no-repeat;
+            /* 背景图由 JS 按需挂上（data-bg），首屏只加载农场那张 */
+            background-position: center bottom;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #7fb356;
             image-rendering: pixelated;
         }
         .letter-bg::after {
@@ -437,7 +449,10 @@
         .level-scene { }
         .level-bg {
             position: absolute; inset: 0;
-            background: url('assets/sky-clouds.webp') center bottom / cover no-repeat;
+            background-position: center bottom;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #bfe0f2;
             image-rendering: pixelated;
         }
         .level-box {
@@ -500,7 +515,10 @@
         .gifts-scene { }
         .gifts-bg {
             position: absolute; inset: 0;
-            background: url('assets/stall.webp') center 28% / cover no-repeat;
+            background-position: center 28%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #8a5a34;
             image-rendering: pixelated;
         }
         .gifts-bg::after {
@@ -593,7 +611,10 @@
         .seasons-scene { }
         .seasons-bg {
             position: absolute; inset: 0;
-            background: url('assets/path-seasons.webp') center bottom / cover no-repeat;
+            background-position: center bottom;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #79b34c;
             image-rendering: pixelated;
         }
         .seasons-head {
@@ -662,7 +683,10 @@
         }
         .night-img {
             position: absolute; inset: 0;
-            background: url('assets/night-farm.webp') center bottom / cover no-repeat;
+            background-position: center bottom;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #16233d;
             image-rendering: pixelated;
         }
         .night-inner {
@@ -824,7 +848,7 @@
 
     <!-- 2. 信件 -->
     <section class="scene letter-scene" id="mail">
-        <div class="letter-bg" role="img" aria-label="像素风格的草甸，白色木栅栏旁的野花丛中立着一个信箱"></div>
+        <div class="letter-bg" data-bg="assets/field-mail.webp" role="img" aria-label="像素风格的草甸，白色木栅栏旁的野花丛中立着一个信箱"></div>
         <div class="mail-frame reveal">
             <span class="mail-flag px-tag">NEW MAIL</span>
             <article class="letter panel-paper">
@@ -836,17 +860,17 @@
                     <p>新的一岁，愿你的日子像今天一样，一睁眼就有好事发生。</p>
                 </div>
                 <p class="letter-sign">- 小咪</p>
-                <img class="letter-seal pixel" src="assets/heart.webp" alt="红心火漆印">
+                <img class="letter-seal pixel" loading="lazy" decoding="async" src="assets/heart.webp" alt="红心火漆印">
             </article>
         </div>
     </section>
 
     <!-- 3. 升级 -->
     <section class="scene level-scene" id="level">
-        <div class="level-bg" role="img" aria-label="蓝天白云，栅栏和草地"></div>
+        <div class="level-bg" data-bg="assets/sky-clouds.webp" role="img" aria-label="蓝天白云，栅栏和草地"></div>
         <div class="level-box box-wood reveal">
             <p class="level-tag px-tag">LEVEL UP!</p>
-            <img class="level-cake pixel" src="assets/cake.webp" alt="像素生日蛋糕">
+            <img class="level-cake pixel" loading="lazy" decoding="async" src="assets/cake.webp" alt="像素生日蛋糕">
             <div class="level-number"><span id="ageNumber">0</span></div>
             <p class="level-line">年龄 Lv. 20 → Lv. 21</p>
             <div class="level-stats">
@@ -859,7 +883,7 @@
 
     <!-- 4. 礼物 -->
     <section class="scene gifts-scene" id="gifts">
-        <div class="gifts-bg" role="img" aria-label="像素风格的集市摊位，红白条纹遮阳棚下摆着南瓜、面包和果酱罐，挂着灯笼"></div>
+        <div class="gifts-bg" data-bg="assets/stall.webp" role="img" aria-label="像素风格的集市摊位，红白条纹遮阳棚下摆着南瓜、面包和果酱罐，挂着灯笼"></div>
         <div class="gifts-body">
             <div class="gifts-head reveal">
                 <h2 class="scene-title">给你的四件礼物</h2>
@@ -867,22 +891,22 @@
             </div>
             <div class="gift-grid">
                 <article class="gift box-wood reveal d1">
-                    <div class="slot"><img class="pixel" src="assets/stardrop.webp" alt="星之果实像素道具"></div>
+                    <div class="slot"><img class="pixel" loading="lazy" decoding="async" src="assets/stardrop.webp" alt="星之果实像素道具"></div>
                     <h3 class="gift-name">星之果实</h3>
                     <p class="gift-desc">愿你的每一天都被小确幸填满，吃到好吃的会笑，看到好看的会开心，遇到好玩的会尖叫。</p>
                 </article>
                 <article class="gift box-wood reveal d2">
-                    <div class="slot"><img class="pixel" src="assets/sword.webp" alt="勇气之剑像素道具"></div>
+                    <div class="slot"><img class="pixel" loading="lazy" decoding="async" src="assets/sword.webp" alt="勇气之剑像素道具"></div>
                     <h3 class="gift-name">勇气之剑</h3>
                     <p class="gift-desc">愿你永远有做自己的勇气，不被定义，不被束缚，想笑就笑，想闹就闹，活成最自在的样子。</p>
                 </article>
                 <article class="gift box-wood reveal d3">
-                    <div class="slot"><img class="pixel" src="assets/roses.webp" alt="心愿花束像素道具"></div>
+                    <div class="slot"><img class="pixel" loading="lazy" decoding="async" src="assets/roses.webp" alt="心愿花束像素道具"></div>
                     <h3 class="gift-name">心愿花束</h3>
                     <p class="gift-desc">愿你走过的每一步都铺满鲜花和星光，愿你回头时满目星河，抬头时皆是坦途。</p>
                 </article>
                 <article class="gift box-wood reveal d4">
-                <div class="slot"><img class="pixel" src="assets/heart.webp" alt="像素红心，代表小咪的爱"></div>
+                <div class="slot"><img class="pixel" loading="lazy" decoding="async" src="assets/heart.webp" alt="像素红心，代表小咪的爱"></div>
                 <h3 class="gift-name">爱你的小咪</h3>
                 <p class="gift-desc">它不占背包格子，也不会变旧。你去矿洞第几层也好，只是下楼买瓶牛奶也好，小咪都跟着你。</p>
                 </article>
@@ -892,7 +916,7 @@
 
     <!-- 5. 四季 -->
     <section class="scene seasons-scene" id="seasons">
-        <div class="seasons-bg" role="img" aria-label="像素风格的乡间小路，春夏秋冬四棵不同季节的树依次排开"></div>
+        <div class="seasons-bg" data-bg="assets/path-seasons.webp" role="img" aria-label="像素风格的乡间小路，春夏秋冬四棵不同季节的树依次排开"></div>
         <div class="seasons-head reveal">
             <h2 class="scene-title">鹈鹕镇的这一年</h2>
         </div>
@@ -922,7 +946,7 @@
 
     <!-- 6. 烟花 -->
     <section class="scene night-scene" id="fireworks">
-        <div class="night-img" role="img" aria-label="像素风格的星露谷农场夜景，星空下农舍窗子里透出暖黄色的灯光"></div>
+        <div class="night-img" data-bg="assets/night-farm.webp" role="img" aria-label="像素风格的星露谷农场夜景，星空下农舍窗子里透出暖黄色的灯光"></div>
         <div class="night-inner reveal">
             <span class="night-tag px-tag">FIREWORK SHOW</span>
             <h2 class="scene-title">送你一场烟花</h2>
@@ -941,7 +965,8 @@
     </footer>
 
     <!-- 背景音乐 -->
-    <audio id="bgm" src="assets/bgm.mp3" loop preload="auto"></audio>
+    <!-- BGM：preload="none" 是关键，否则 4MB 会在首屏就开始下，把图片和字体挤掉 -->
+    <audio id="bgm" src="assets/bgm.mp3" loop preload="none"></audio>
 
     <!-- 音乐开关 -->
     <button class="music-toggle" id="musicBtn" title="背景音乐" aria-label="播放或暂停背景音乐">♪</button>
@@ -949,6 +974,26 @@
 
 <script>
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===== 非首屏背景图延后到 load 之后再挂 =====
+   6 张场景图加起来约 610KB。如果直接写在 CSS 里，浏览器从首屏开始就会去下它们，
+   跟字体、首屏图、BGM 抢带宽。这里把 URL 从 CSS 挪到 data-bg，等 load（首屏已经
+   画完）之后再统一挂上；首屏只需要农场那一张，那张另有 <link rel=preload>。
+   review 记录：试过 IntersectionObserver 和滚动事件两种"滑到附近再加载"，
+   但无头 Chrome 在虚拟时间下既不派发 scroll 事件也不送 IO 回调（scrollY 会变、
+   事件不来），没法实测；而且万一触发失败就是"滑过去一片空白"的可见 bug。
+   改成 load 后统一挂载：行为确定、可实测，也不会漏图。 */
+(function deferBackgrounds() {
+    const layers = Array.from(document.querySelectorAll('[data-bg]'));
+    if (!layers.length) return;
+    const apply = () => layers.forEach((el) => {
+        el.style.backgroundImage = "url('" + el.dataset.bg + "')";
+    });
+    if (document.readyState === 'complete') { setTimeout(apply, 300); return; }
+    // 用 setTimeout 而不是 requestIdleCallback：rIC 在页面持续有任务时会被无限延后，
+    // 而这种「延后一点、等首屏画完」的诉求要的就是可预测。
+    window.addEventListener('load', () => setTimeout(apply, 300));
+})();
 
 /* ===== 花粉粒子（像素小方块）===== */
 const pollenCanvas = document.getElementById('pollenCanvas');
@@ -1182,8 +1227,13 @@ function unlockMusic() {
     }
 }
 
-// 打开页面先尝试自动播放（常来的访客浏览器会放行）
-unlockMusic();
+// 页面加载完再尝试自动播放。BGM 有 4MB，放在首屏加载途中会把图片和字体挤掉、
+// 直接拖慢打开速度；等 load 之后再试，视觉上页面已经就绪了。
+function scheduleAutoPlay() {
+    setTimeout(unlockMusic, 600);
+}
+if (document.readyState === 'complete') scheduleAutoPlay();
+else window.addEventListener('load', scheduleAutoPlay);
 
 // 若被浏览器拦截（需先交互一次），任意点击/触摸/按键后立即开播
 function globalUnlock(e) {
