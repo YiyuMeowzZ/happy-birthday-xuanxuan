@@ -1,0 +1,13 @@
+# 中间产物，不入库
+
+# 二进制字库源文件（重裁 assets/fonts/zpix-subset.woff2 时临时下载，见 tools/subset-font.py）
+_font/
+
+# 本地预览/截图用的临时文件
+_preview.html
+_page4.html
+_fcheck.html
+_measure.html
+_test.html
+_*.png
+_*.py
