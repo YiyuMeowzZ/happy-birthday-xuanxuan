@@ -776,7 +776,9 @@
             .hero-inner { justify-content: center; padding: 5.5rem 1.1rem 3rem; }
             .hero-panel { max-width: 100%; padding: 1.6rem 1.4rem 1.8rem; transform: rotate(-0.8deg); }
             .hero-cake-mini { width: 72px; height: 72px; top: -34px; right: -8px; }
-            .hero-hud { top: auto; bottom: 14px; right: 14px; }
+            /* 日期牌：移动端放回右上角，下移一点避开顶部能量条；字号取 24px（Zpix 是 12px 点阵，2 倍缩放像素块才是等大的） */
+            .hero-hud { top: 48px; right: 12px; bottom: auto; }
+            .hud-chip { font-size: 1.5rem; line-height: 1.25; padding: 0.5rem 0.7rem; }
             .letter-scene { align-items: center; }
             .mail-frame { margin-left: 0; }
             .gift-grid {

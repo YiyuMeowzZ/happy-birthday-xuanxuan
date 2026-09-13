@@ -1,13 +1,6 @@
-# 中间产物，不入库
-
-# 二进制字库源文件（重裁 assets/fonts/zpix-subset.woff2 时临时下载，见 tools/subset-font.py）
-_font/
-
-# 本地预览/截图用的临时文件
-_preview.html
-_page4.html
-_fcheck.html
-_measure.html
-_test.html
-_*.png
-_*.py
+# 本地产物 / 中间文件，一律不入库。
+# 约定：以 _ 开头的文件或目录都是临时文件。
+#   _font/          源字库缓存（重裁 assets/fonts/zpix-subset.woff2 时用，见 tools/subset-font.py）
+#   _preview.html   本地预览用的改写页（去掉 scroll-snap 便于整页截图）
+#   _*.html / _*.png / _*.py  预览、测试、测量与截图脚本及产物
+_*
