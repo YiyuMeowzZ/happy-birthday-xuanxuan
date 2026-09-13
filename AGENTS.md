@@ -38,8 +38,9 @@ Actions workflow: `.github/workflows/deploy.yml` (uses `actions/deploy-pages@v4`
 
 - All CSS/JS is inline in `index.html` — no separate files
 - Chinese content throughout — keep encoding UTF-8
-- Scroll-snap paging: each `<section class="scene">` is `min-height: 100dvh`, `scroll-snap-align: start`, `scroll-snap-stop: always` (one gesture = one page). A JS wheel handler makes a single mouse-wheel notch flip exactly one page; touch devices use the native snap-stop.
-- **每个 scene 的内容必须放得进一屏**。放不进时（`scrollHeight > innerHeight`）滚轮翻页会主动让位给原生滚动，但 `scroll-snap-stop` 会让它卡在页首，体验很差。
+- Scroll-snap paging: each `<section class="scene">` is `min-height: 100dvh`, `scroll-snap-align: start`, `scroll-snap-stop: always`. 但**翻页不依赖 CSS**：`wheel` 处理一格一页，`touchstart/touchmove/touchend` 处理一次滑动一页。
+- **触屏为什么不用 `scroll-snap-stop`**：iOS 的惯性滚动会直接冲过吸附点、一次滑好几页。所以 `touchmove`（**必须显式 `{passive:false}`**，Chrome 对 window 上的 touchmove 默认 passive，那样 `preventDefault` 无效）里判断手势后拦掉原生滚动并翻一页；一次手势只翻一次，后续移动全部吞掉，避免原生滚动和 smooth 翻页同时生效。
+- **每个 scene 的内容必须放得进一屏**。放不进时（`scrollHeight > innerHeight`）滚轮和触摸都会主动让位给原生滚动（滚到边界才翻页），但 `scroll-snap-stop` 会让它卡在页首，体验很差。
 - Pixel art: every image uses `image-rendering: pixelated`
 - Chinese pixel font: `assets/fonts/zpix-subset.woff2` (Zpix subset, 12KB) — **全站字体**，正文和大标题都用它；英文 HUD 标签另用 Press Start 2P。改动页面中文文案后必须重跑 `python tools/subset-font.py`，否则新字会回退到系统字体。源字体放到 `_font/`（该目录不入库）：Zpix 从 https://github.com/SolidZORO/zpix-pixel-font/releases 下 `zpix.woff2`，Press Start 2P 从 https://github.com/google/fonts/tree/main/ofl/pressstart2p 下 `PressStart2P-Regular.ttf`。脚本会一次把两个子集都重裁。
 - 字号尽量取 12 的整数倍（36/48/60px），点阵块才是等大正方形；非整数倍时浏览器会把块渲染成 5px/6px 混合，颗粒不均
