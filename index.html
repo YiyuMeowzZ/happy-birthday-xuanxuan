@@ -1296,7 +1296,9 @@ function flipTo(i) {
 
 // 鼠标滚轮：一格就是一页。触屏交给原生 scroll-snap-stop 处理
 window.addEventListener('wheel', (e) => {
-    if (REDUCE || Math.abs(e.deltaY) < 4) return;
+    if (Math.abs(e.deltaY) < 4) return;
+    // 注：翻页不属于"减少运动"，REDUCE 用户也应该能翻。
+    // 之前的 if (REDUCE || ...) 把整个手势废了，等于 iOS 默认开"减弱动态效果"的用户翻不了页。
     const cur = pages[nearestPage()];
     const down = e.deltaY > 0;
     // 内容超过一屏的页：先在页内正常滚动，滚到边界再翻页
@@ -1320,7 +1322,9 @@ window.addEventListener('wheel', (e) => {
 let touchY = 0, touchX = 0, touchLive = false, touchClaimed = false;
 
 window.addEventListener('touchstart', (e) => {
-    if (REDUCE || e.touches.length !== 1) { touchLive = false; return; }
+    if (e.touches.length !== 1) { touchLive = false; return; }
+    // 注：翻页不属于"减少运动"，REDUCE 用户也应该能滑。
+    // 之前的 if (REDUCE || ...) 直接死掉整个手势，iOS 默认开"减弱动态效果"的用户整页翻不动。
     touchY = e.touches[0].clientY;
     touchX = e.touches[0].clientX;
     touchLive = true;
