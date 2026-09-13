@@ -1338,15 +1338,14 @@ window.addEventListener('touchmove', (e) => {
     if (Math.abs(dy) < 6) return;                                  // 还没滑起来
     if (Math.abs(dx) > Math.abs(dy)) { touchLive = false; return; } // 横向手势，交还给浏览器
 
-    const cur = pages[nearestPage()];
-    const down = dy < 0;
-    // 内容超过一屏的页：先在页内正常滚动，滚到边界才翻页
-    if (cur && overflowed(cur)) {
-        const rect = cur.getBoundingClientRect();
-        const atEdge = down ? rect.bottom <= window.innerHeight + 8 : rect.top >= -8;
-        if (!atEdge) { touchLive = false; return; }
-    }
+    // touch 路径不管 overflowed：touch 是连续手势，没有"先滚到底再翻"的过渡；
+    // 短滑（<40）让原生接管滚页内，长滑（≥40）直接翻页。
+    // 之前照搬滚轮的 overflowed 判断，结果是只要当前页内容稍长（scrollHeight > innerHeight+4），
+    // 用户从屏幕中段上滑 dy<-40 就被 atEdge=false 拦掉，整个手势被交还浏览器，原生 scroll
+    // 又接管不到这个手势的翻页意图 → 用户感觉"滑不动"。
+    // 滚轮那边保留 overflowed 检查（滚轮天然支持"先滚到底再翻"的过渡）。
 
+    const down = dy < 0;
     touchClaimed = true;
     if (e.cancelable) e.preventDefault();
     if (paging || Math.abs(dy) < 40) return;
