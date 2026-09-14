@@ -1285,13 +1285,31 @@ function flipTo(i) {
     paging = true;
     const target = pages[i];
     const start = performance.now();
-    target.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
-    // 等这一页真正停稳再解锁，这样连续滚轮不会被吞掉
-    (function settle() {
-        const arrived = Math.abs(target.getBoundingClientRect().top) < 4;
-        if (arrived || performance.now() - start > 600) { paging = false; return; }
-        requestAnimationFrame(settle);
-    })();
+    let poll = 0, hard = 0, done = false;
+    const unlock = () => {
+        if (done) return;
+        done = true;
+        paging = false;
+        if (poll) clearInterval(poll);
+        if (hard) clearTimeout(hard);
+    };
+    // 解锁绝不能依赖 requestAnimationFrame：
+    //   Android Chrome 在省电模式/滚动进行中会节流甚至暂停 rAF，
+    //   一旦 rAF 停摆，锁就永久释放不掉 —— 而原实现连 600ms 超时检查
+    //   本身也写在 rAF 回调里，等于超时保护一起失效。
+    //   后果：单指滑动被 preventDefault 吞掉（页面完全不动），
+    //   双指却正常（双指走的是多指分支，绕过了单指 handler）。
+    // 这里改用 setInterval 轮询 + setTimeout 硬兜底，并 try/catch 兜住
+    // scrollIntoView 抛异常的情况（异常同样会让锁卡死）。
+    poll = setInterval(() => {
+        if (performance.now() - start > 400 || Math.abs(target.getBoundingClientRect().top) < 4) unlock();
+    }, 50);
+    hard = setTimeout(unlock, 900);
+    try {
+        target.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+    } catch (err) {
+        unlock();
+    }
 }
 
 // 鼠标滚轮：一格就是一页。触屏交给原生 scroll-snap-stop 处理
@@ -1319,7 +1337,7 @@ window.addEventListener('wheel', (e) => {
    免得原生滚动和 smooth 翻页同时生效、滚出两页。
    touchmove 必须显式 passive:false，Chrome 对 window 上的 touchmove 默认是 passive 的，
    那样调 preventDefault 无效。 */
-let touchY = 0, touchX = 0, touchLive = false, touchClaimed = false;
+let touchY = 0, touchX = 0, touchLive = false, touchClaimed = false, touchFlipped = false;
 
 window.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) { touchLive = false; return; }
@@ -1329,6 +1347,7 @@ window.addEventListener('touchstart', (e) => {
     touchX = e.touches[0].clientX;
     touchLive = true;
     touchClaimed = false;
+    touchFlipped = false;
 }, { passive: true });
 
 window.addEventListener('touchmove', (e) => {
@@ -1342,21 +1361,45 @@ window.addEventListener('touchmove', (e) => {
     if (Math.abs(dy) < 6) return;                                  // 还没滑起来
     if (Math.abs(dx) > Math.abs(dy)) { touchLive = false; return; } // 横向手势，交还给浏览器
 
+    // 关键：翻页锁还没释放时，绝不拦原生滚动。
+    // 一旦拦了又因为 paging 而 return，用户既翻不了页、原生滚动也被 preventDefault 吞掉，
+    // 整页就完全不动了（实测 Android：双指能滑、单指完全不动，就是这个症状）。
+    // 这里把手势交还浏览器，至少还能原生滚。
+    if (paging) { touchLive = false; return; }
+
     // touch 路径不管 overflowed：touch 是连续手势，没有"先滚到底再翻"的过渡；
-    // 短滑（<40）让原生接管滚页内，长滑（≥40）直接翻页。
+    // 短滑让原生接管滚页内，够长的滑动直接翻页。
     // 之前照搬滚轮的 overflowed 判断，结果是只要当前页内容稍长（scrollHeight > innerHeight+4），
     // 用户从屏幕中段上滑 dy<-40 就被 atEdge=false 拦掉，整个手势被交还浏览器，原生 scroll
     // 又接管不到这个手势的翻页意图 → 用户感觉"滑不动"。
     // 滚轮那边保留 overflowed 检查（滚轮天然支持"先滚到底再翻"的过渡）。
-
     const down = dy < 0;
     touchClaimed = true;
     if (e.cancelable) e.preventDefault();
-    if (paging || Math.abs(dy) < 40) return;
+    if (Math.abs(dy) < 40) return;
+    touchFlipped = true;
     flipTo(nearestPage() + (down ? 1 : -1));
 }, { passive: false });
 
-function endTouch() { touchLive = false; touchClaimed = false; }
+function endTouch(e) {
+    // 快速轻滑兜底：手指快速一甩时，touchmove 可能只采样到很少的几个点，
+    // 累积位移还没到 40px 手指就抬起了。这时若已接管（原生滚动已被拦），
+    // 就永远不会翻页，用户同样感觉"滑不动"。用 touchend 的最终位移补一次判定。
+    if (touchLive && touchClaimed && !touchFlipped && !paging) {
+        const t = (e.changedTouches && e.changedTouches[0]) || null;
+        if (t) {
+            const dy = t.clientY - touchY;
+            const dx = t.clientX - touchX;
+            if (Math.abs(dy) >= 24 && Math.abs(dx) < Math.abs(dy)) {
+                touchFlipped = true;
+                flipTo(nearestPage() + (dy < 0 ? 1 : -1));
+            }
+        }
+    }
+    touchLive = false;
+    touchClaimed = false;
+    touchFlipped = false;
+}
 window.addEventListener('touchend', endTouch, { passive: true });
 window.addEventListener('touchcancel', endTouch, { passive: true });
 </script>
